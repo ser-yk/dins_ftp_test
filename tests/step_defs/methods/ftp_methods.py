@@ -1,6 +1,7 @@
 from ftplib import FTP
 from pathlib import Path
 from random import randint
+import os
 
 
 def download_file(ftp: FTP, path: str, name: str) -> None:
@@ -34,7 +35,7 @@ def upload_file(ftp: FTP, path: str, ftype: str = None):
         return status
 
 
-def get_file_size(path: str) -> str:
+def get_file_size_as_string(path: str) -> str:
     q = Path(path)
     kb_size = int(q.stat().st_size / 1024)
     measure = path[-6:-4]
@@ -46,6 +47,12 @@ def get_file_size(path: str) -> str:
     elif measure == 'GB':
         gb_size = int(kb_size / 1024 / 1024)
         return str(gb_size) + 'GB'
+
+
+def get_file_size(path: str, name: str) -> int:
+    file_path = Path(path) / name
+    size = os.path.getsize(str(file_path))
+    return size
 
 
 def check_exist_file(path: str) -> bool:

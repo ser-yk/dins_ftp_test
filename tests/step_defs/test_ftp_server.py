@@ -29,7 +29,7 @@ def connect(connect_to_ftp):
     return connect_to_ftp
 
 
-@given(parsers.parse("I have directory - {download}"))
+@given(parsers.parse("I have the directory - {download}"))
 def create_download_dir(download):
     full_dir = get_download_dir(dir_name=download)
     return full_dir
@@ -46,15 +46,23 @@ def get_files_list_ftp(connect):
     FILES_LIST = connect.nlst()
 
 
-@then("<file_name> exists in download directory")
+@then("<file_name> exists in the download directory")
 def file_should_be_in_download_dir(file_name, create_download_dir):
     file_path = get_download_dir('download', file_name)
     assert check_exist_file(file_path), 'File does not exist in download directory'
 
 
-@then("<file_name> still exists on ftp server")
+@then("<file_name> still exists on the ftp server")
 def file_should_be_on_ftp(file_name):
     assert file_name in FILES_LIST, 'File does not exist on ftp server after download'
+
+
+@then("the size of <file_name> in the download dir is equal to the size of file on the server")
+def file_size_should_be_equal(connect, file_name, create_download_dir):
+    ftp_file_size = connect.size(file_name)
+    download_file_size = get_file_size(create_download_dir, file_name)
+    assert ftp_file_size == download_file_size, f'File sizes are different. ' \
+                                                f'Downloaded {download_file_size} bytes, but on server {ftp_file_size}'
 
 
 # Test 2
@@ -111,10 +119,10 @@ def step_impl(open_upload_dir_on_ftp, create_file_for_upload):
     STATUS = upload_file(open_upload_dir_on_ftp, create_file_for_upload)
 
 
-@then(parsers.parse("I have status success status - {answer}"))
+@then(parsers.parse("I have successful status - {answer}"))
 def status_should_be_success(answer):
     global STATUS
-    assert answer in STATUS, f'Successful status {answer} from ftp server was expected. Actual: {STATUS}'
+    assert answer in STATUS, f'Expected successful status {answer} from ftp server. Actual: {STATUS}'
 
 
 @then("file not exists on ftp directory")
@@ -147,6 +155,6 @@ def get_download_time(connect, create_download_dir, file_name):
     DOWNLOAD_TIME = int(time() - start)
 
 
-@then(parsers.parse("download speed not smaller than {time} sec"))
-def download_time_should_be_more(time):
-    assert int(time) > DOWNLOAD_TIME, f'Loading time is too long: {DOWNLOAD_TIME}. Expected not more {time}'
+@then(parsers.parse("download speed not smaller than {time_} sec"))
+def download_time_should_be_more(time_):
+    assert int(time_) > DOWNLOAD_TIME, f'Loading time is too long: {DOWNLOAD_TIME}. Expected not more {time}'

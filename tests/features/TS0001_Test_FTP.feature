@@ -6,12 +6,12 @@ Feature: T0001_Test_load_file
     Given I have connect to ftp server
 
   Scenario: Test download files
-    Given I have directory - download
+    Given I have the directory - download
     When I download <file_name> from ftp server
     And I get the files list from ftp server
-    Then <file_name> exists in download directory
-    And <file_name> still exists on ftp server
-#    check size
+    Then <file_name> exists in the download directory
+    And <file_name> still exists on the ftp server
+    And the size of <file_name> in the download dir is equal to the size of file on the server
 
   Scenario: Delete file on ftp
     Given I have the files list from ftp
@@ -23,10 +23,10 @@ Feature: T0001_Test_load_file
     And directory - upload on ftp
     When I upload file on ftp
     And I get the files list from ftp server
-    Then I have status success status - 250
+    Then I have successful status - 250
     And file not exists on ftp directory
 
   Scenario: Test download speed
-    Given I have directory - download
+    Given I have the directory - download
     When I download file
     Then download speed not smaller than 20 sec
