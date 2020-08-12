@@ -1,9 +1,10 @@
 from time import time
+from pathlib import Path
 
 from pytest_bdd import scenario, given, when, then, parsers
 import pytest
 
-from methods.ftp_methods import *
+from methods.ftp_methods import download_file, upload_file, get_file_size, create_dir, get_random_file_name, create_file
 
 # Constants
 FILES_LIST = list()
@@ -31,7 +32,7 @@ def connect(connect_to_ftp):
 
 @given(parsers.parse("I have the directory - {download}"))
 def create_download_dir(download):
-    full_dir = get_download_dir(dir_name=download)
+    full_dir = create_dir(dir_name=download)
     return full_dir
 
 
@@ -48,8 +49,8 @@ def get_files_list_ftp(connect):
 
 @then("<file_name> exists in the download directory")
 def file_should_be_in_download_dir(file_name, create_download_dir):
-    file_path = get_download_dir('download', file_name)
-    assert check_exist_file(file_path), 'File does not exist in download directory'
+    file_path = create_dir('download', file_name)
+    assert Path(file_path).stat().st_size, 'File does not exist in download directory'
 
 
 @then("<file_name> still exists on the ftp server")
@@ -129,7 +130,7 @@ def status_should_be_success(answer):
 def file_should_not_be_on_ftp(open_upload_dir_on_ftp, create_file_for_upload):
     global FILES_LIST
     FILES_LIST = open_upload_dir_on_ftp.nlst()
-    file_name = get_file_name_from_path(create_file_for_upload)
+    file_name = create_file_for_upload.split('\\')[-1]
     assert file_name not in FILES_LIST, f'The file - {file_name} is present on the ftp server, Expected that not be'
 
 
