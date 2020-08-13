@@ -89,3 +89,22 @@ def create_file(name: str, size_kb: int, dir_='upload') -> str:
     with open(out, "wb") as f:
         f.truncate(1024 * size_kb)
     return out
+
+
+def get_file_size_as_string(byte_size: int, file_name: str) -> str:
+    """
+    The function returns a string with the file size in MB
+    :param byte_size: File size in bytes
+    :param file_name: File name
+    :return: String with the file size in MB
+    """
+    kb_size = int(byte_size / 1024)
+    measure = file_name[-6:-4]
+    if measure == 'KB':
+        return str(kb_size) + 'KB'
+    elif measure == 'GB':
+        gb_size = int(kb_size / 1024 / 1024)
+        return str(gb_size) + 'GB'
+    else:
+        mb_size = int(kb_size / 1024)
+        return str(mb_size) + 'MB'
